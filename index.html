@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Z HEX — Powered by KAVINDU</title>
+<style>
+/* BODY */
+body {
+    height: 100vh;
+    margin: 0;
+    font-family: "Courier New", Courier, monospace;
+    background: #0d0d0d;
+    color: #00ff99;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* CONTAINER */
+.container {
+    width: 900px;
+    height: 95vh;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* HEADER */
+.header {
+    text-align: center;
+}
+.header h1 {
+    color: #00ff99;
+    margin: 0;
+    font-size: 36px;
+    text-shadow: 0 0 10px #00ff99, 0 0 20px #00ff99;
+}
+.header p {
+    margin: 0;
+    font-size: 14px;
+    color: #00ffaa;
+    text-shadow: 0 0 5px #00ffaa;
+}
+.header span { font-weight:bold; }
+
+/* MAIN TABS */
+.tabs {
+    display: flex;
+    gap: 10px;
+}
+.tabs button {
+    flex: 1;
+    padding: 10px;
+    background: #111;
+    color: #00ff99;
+    border: 1px solid #00ff99;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: 0.3s;
+    text-shadow: 0 0 5px #00ff99;
+}
+.tabs button.active {
+    background: #00ff99;
+    color: #111;
+    text-shadow: 0 0 20px #00ff99;
+}
+
+/* TAB CONTENT */
+.tab-content {
+    display: none;
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #00ff99;
+    border-radius: 8px;
+    background: rgba(0,255,153,0.05);
+}
+.tab-content.active { display: block; overflow-y:auto; }
+
+/* BUY PANEL INNER TABS */
+.buy-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.buy-tabs button {
+    flex: 1;
+    padding: 8px;
+    background: #111;
+    color: #00ff99;
+    border: 1px solid #00ff99;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.buy-tabs button.active {
+    background: #00ff99;
+    color: #111;
+}
+
+/* Buy Cards Tab Content */
+.buy-tab-content { display: none; }
+.buy-tab-content.active { display: block; }
+
+/* CARD */
+.card {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid #00ff99;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #00ff99;
+}
+.card h2 { color: #00ff99; text-shadow: 0 0 5px #00ff99; }
+.card h3 { color: #00ffaa; margin-bottom: 5px; }
+.card ul li { margin: 4px 0; }
+
+/* BUTTONS */
+button,.btn {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    color: #111;
+    background: #00ff99;
+    border: none;
+    box-shadow: 0 0 5px #00ff99, 0 0 10px #00ff99;
+    transition: 0.3s;
+}
+button:hover,.btn:hover {
+    box-shadow: 0 0 15px #00ff99, 0 0 25px #00ff99;
+}
+.btn.whatsapp { background:#25D366;color:#fff;box-shadow:0 0 10px #25D366; }
+.btn.discord { background:#5865F2;color:#fff;box-shadow:0 0 10px #5865F2; }
+
+/* INPUTS */
+input,textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 6px;
+    border-radius: 6px;
+    border: 1px solid #00ff99;
+    background: #111;
+    color: #00ff99;
+    font-family: monospace;
+}
+textarea { height: 80px; resize: none; }
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #00ffaa;
+    text-shadow: 0 0 5px #00ffaa;
+}
+.footer span { font-weight: bold; }
+
+/* ANIMATION */
+.animated { animation: glowFade 2.5s ease-in-out infinite; }
+@keyframes glowFade {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<div class="header">
+    <h1>Z HEX</h1>
+    <p>Powered by <span>KAVINDU</span></p>
+</div>
+
+<!-- MAIN TABS -->
+<div class="tabs">
+    <button onclick="showTab('buy')" class="active">🛒 Buy Panel</button>
+    <button onclick="showTab('feedback')">📝 Feedback</button>
+</div>
+
+<!-- TAB CONTENTS -->
+<div id="buy" class="tab-content active">
+
+    <!-- Buy inner tabs -->
+    <div class="buy-tabs">
+        <button onclick="showBuyTab('basic')" class="active">BASIC</button>
+        <button onclick="showBuyTab('plus')">PLUS</button>
+    </div>
+
+    <!-- BASIC CARD -->
+    <div id="basic" class="buy-tab-content active">
+        <div class="card">
+            <h2>📌 FreeFire BASIC Panel</h2>
+            <h3>Features:</h3>
+            <ul>
+                <li>Support 32bit / 64bit emulators</li>
+                <li>Aimbot (ON/OFF)</li>
+                <li>Aimbot Drag (ON/OFF)</li>
+                <li>Legitimate</li>
+                <li>Sniper Scope</li>
+                <li>Sniper Switch</li>
+                <li>ESP (x32/x64)</li>
+                <li>Mobile Control</li>
+                <li>Female Fix</li>
+                <li>Risk Features</li>
+                <li>Stream Mode</li>
+                <li>Mute Beep Sound</li>
+                <li>Trace Mode</li>
+                <li>Real-time Update</li>
+                <li>Safe Disable System</li>
+            </ul>
+            <h3>Packages:</h3>
+            <ul>
+                <li>01 Year : Rs. 3000 (12 USD)</li>
+                <li>03 Month : Rs. 1800 (08 USD)</li>
+                <li>01 Month : Rs. 1000 (05 USD)</li>
+                <li>02 Week : Rs. 800 (03 USD)</li>
+                <li>01 Week : Rs. 500 (02 USD)</li>
+                <li>03 Day : Rs. 300 (01 USD)</li>
+            </ul>
+            <a class="btn whatsapp" href="https://wa.me/94768863617" target="_blank">📲 Buy via WhatsApp</a>
+            <a class="btn discord" href="https://discord.gg/52Hf8C463q" target="_blank">💬 Discord Server</a>
+        </div>
+    </div>
+
+    <!-- PLUS CARD -->
+    <div id="plus" class="buy-tab-content">
+        <div class="card">
+            <h2>📌 FreeFire PLUS Panel</h2>
+            <h3>Features:</h3>
+            <ul>
+                <li>Support 32bit / 64bit emulators</li>
+                <li>Aimbot (ON/OFF)</li>
+                <li>Aimbot Drag (ON/OFF)</li>
+                <li>ESP (x32/x64)</li>
+                <li>Female Fix – Lobby</li>
+                <li>Real-time Update</li>
+                <li>Safe Disable System</li>
+            </ul>
+            <h3>Packages:</h3>
+            <ul>
+                <li>01 Year : Rs. 2000 (12 USD)</li>
+                <li>03 Month : Rs. 1000 (08 USD)</li>
+                <li>01 Month : Rs. 800 (05 USD)</li>
+            </ul>
+            <a class="btn whatsapp" href="https://wa.me/94768863617" target="_blank">📲 Buy via WhatsApp</a>
+            <a class="btn discord" href="https://discord.gg/52Hf8C463q" target="_blank">💬 Discord Server</a>
+        </div>
+    </div>
+
+</div>
+
+<!-- FEEDBACK TAB -->
+<div id="feedback" class="tab-content">
+    <div class="card">
+        <h2>📝 Send Feedback</h2>
+        <input type="text" id="username" placeholder="Your Name">
+        <textarea id="message" placeholder="Type your feedback..."></textarea>
+        <input type="file" id="fileInput" accept="image/*">
+        <button class="btn secondary" onclick="captureScreen()">📸 Capture Screenshot</button>
+        <button onclick="sendFeedback()">Send Feedback</button>
+    </div>
+</div>
+
+<div class="footer animated">
+© 2025 <span>KAVINDU</span> — All Rights Reserved
+</div>
+
+</div>
+
+<script>
+/* MAIN TABS */
+function showTab(id){
+    document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
+    document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    event.target.classList.add("active");
+}
+
+/* BUY PANEL INNER TABS */
+function showBuyTab(id){
+    document.querySelectorAll(".buy-tab-content").forEach(t=>t.classList.remove("active"));
+    document.querySelectorAll(".buy-tabs button").forEach(b=>b.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    event.target.classList.add("active");
+}
+
+/* FEEDBACK FUNCTIONS */
+let capturedBlob=null;
+async function captureScreen(){
+    try{
+        const stream=await navigator.mediaDevices.getDisplayMedia({video:true});
+        const track=stream.getVideoTracks()[0];
+        const imageCapture=new ImageCapture(track);
+        const bitmap=await imageCapture.grabFrame();
+        const canvas=document.createElement("canvas");
+        canvas.width=bitmap.width;
+        canvas.height=bitmap.height;
+        canvas.getContext("2d").drawImage(bitmap,0,0);
+        canvas.toBlob(b=>{capturedBlob=b;alert("Screenshot captured ✅");});
+        track.stop();
+    }catch{alert("Screenshot cancelled");}
+}
+async function sendFeedback(){
+    const name=document.getElementById("username").value;
+    const msg=document.getElementById("message").value;
+    const file=document.getElementById("fileInput").files[0];
+    if(!name||!msg){alert("Name & Message required"); return;}
+    const webhookURL="https://discord.com/api/webhooks/1449326157680873567/6x9ND9Z8FUhKdi0zmyyOk7cRPJF_386fNV_cdDVC0yKSI1iHPzoztY8zBH1AQpvR7M-F";
+    const formData=new FormData();
+    formData.append("payload_json",JSON.stringify({
+        content:"@everyone",
+        username:"Panel Feedback",
+        embeds:[{title:"📝 New Feedback",color:65280,fields:[
+            {name:"👤 User",value:name},
+            {name:"💬 Message",value:msg}
+        ]}]
+    }));
+    if(capturedBlob) formData.append("file",capturedBlob,"screenshot.png");
+    else if(file) formData.append("file",file);
+    try{
+        await fetch(webhookURL,{method:"POST",body:formData});
+        alert("Feedback Sent 👍");
+        document.getElementById("username").value="";
+        document.getElementById("message").value="";
+        document.getElementById("fileInput").value="";
+        capturedBlob=null;
+    }catch{alert("Error sending feedback");}
+}
+</script>
+</body>
+</html>
