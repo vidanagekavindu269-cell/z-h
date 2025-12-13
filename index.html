@@ -2,338 +2,442 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Z HEX — Powered by KAVINDU</title>
+
 <style>
-/* BODY */
-body {
-    height: 100vh;
-    margin: 0;
-    font-family: "Courier New", Courier, monospace;
-    background: #0d0d0d;
-    color: #00ff99;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+:root{
+  --main:#00ff99;
+  --sub:#00ffaa;
+  --bg:#0d0d0d;
+  --card:#111;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:"Courier New", monospace;
+  background:var(--bg);
+  color:var(--main);
+}
+body.light {
+  background:#fff;
+  color:#000;
+}
+body.light .card {
+  background:#eee;
+  border-color:#00ff99;
+}
+body.light .tabs button, body.light .subtabs button {
+  background:#ddd;
+  color:#000;
+  border-color:#00ff99;
+}
+body.light .btn {
+  background: #00ff99;
+  color: #111;
 }
 
-/* CONTAINER */
-.container {
-    width: 900px;
-    height: 95vh;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+.container{
+  max-width:1000px;
+  margin:auto;
+  padding:10px;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.header{
+  text-align:center;
+  position: relative;
+}
+.header h1{
+  margin:0;
+  font-size:34px;
+  text-shadow:0 0 15px var(--main);
+}
+.header p{
+  margin:0;color:var(--sub);
+}
+.header button.dark-toggle{
+  position:absolute;
+  top:0;
+  right:0;
+  margin:10px;
+  padding:6px 12px;
+  background:#111;
+  color:var(--main);
+  border:1px solid var(--main);
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+}
+#global-views{
+  position:absolute;
+  top:10px;
+  left:10px;
+  font-size:14px;
+  color:var(--sub);
+  font-weight:bold;
 }
 
-/* HEADER */
-.header {
-    text-align: center;
+.tabs,.subtabs{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
 }
-.header h1 {
-    color: #00ff99;
-    margin: 0;
-    font-size: 36px;
-    text-shadow: 0 0 10px #00ff99, 0 0 20px #00ff99;
+.tabs button,.subtabs button{
+  flex:1;
+  min-width:120px;
+  padding:10px;
+  background:#111;
+  color:var(--main);
+  border:1px solid var(--main);
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
 }
-.header p {
-    margin: 0;
-    font-size: 14px;
-    color: #00ffaa;
-    text-shadow: 0 0 5px #00ffaa;
-}
-.header span { font-weight:bold; }
-
-/* MAIN TABS */
-.tabs {
-    display: flex;
-    gap: 10px;
-}
-.tabs button {
-    flex: 1;
-    padding: 10px;
-    background: #111;
-    color: #00ff99;
-    border: 1px solid #00ff99;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    text-transform: uppercase;
-    transition: 0.3s;
-    text-shadow: 0 0 5px #00ff99;
-}
-.tabs button.active {
-    background: #00ff99;
-    color: #111;
-    text-shadow: 0 0 20px #00ff99;
+.tabs button.active,.subtabs button.active{
+  background:var(--main);
+  color:#111;
 }
 
-/* TAB CONTENT */
-.tab-content {
-    display: none;
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #00ff99;
-    border-radius: 8px;
-    background: rgba(0,255,153,0.05);
+.tab-content,.subtab-content{
+  opacity:0;
+  transform:translateY(10px);
+  transition:0.3s ease;
+  display:none;
+  border:1px solid var(--main);
+  border-radius:12px;
+  padding:10px;
+  background:rgba(0,255,153,0.05);
 }
-.tab-content.active { display: block; overflow-y:auto; }
-
-/* BUY PANEL INNER TABS */
-.buy-tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-.buy-tabs button {
-    flex: 1;
-    padding: 8px;
-    background: #111;
-    color: #00ff99;
-    border: 1px solid #00ff99;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-}
-.buy-tabs button.active {
-    background: #00ff99;
-    color: #111;
+.tab-content.active,.subtab-content.active{
+  display:block;
+  opacity:1;
+  transform:translateY(0);
 }
 
-/* Buy Cards Tab Content */
-.buy-tab-content { display: none; }
-.buy-tab-content.active { display: block; }
+.card{
+  background:rgba(0,0,0,0.35);
+  border:1px solid var(--main);
+  border-radius:12px;
+  padding:15px;
+  margin-bottom:15px;
+  box-shadow:0 0 10px var(--main);
+  transition:0.3s;
+}
+.card:hover{
+  box-shadow:0 0 20px var(--main);
+}
+.card h2,h3{color:var(--sub)}
+.card ul{padding-left:18px}
+.card li{margin:6px 0}
 
-/* CARD */
-.card {
-    background: rgba(0,0,0,0.3);
-    border: 1px solid #00ff99;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px #00ff99;
+input, textarea{
+  width:100%;
+  padding:8px;
+  margin:6px 0;
+  border-radius:6px;
+  border:1px solid var(--main);
+  background:#111;
+  color:var(--main);
+  font-family:"Courier New", monospace;
 }
-.card h2 { color: #00ff99; text-shadow: 0 0 5px #00ff99; }
-.card h3 { color: #00ffaa; margin-bottom: 5px; }
-.card ul li { margin: 4px 0; }
+textarea{resize:none; height:80px}
 
-/* BUTTONS */
-button,.btn {
-    display: inline-block;
-    margin-top: 8px;
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    text-decoration: none;
-    color: #111;
-    background: #00ff99;
-    border: none;
-    box-shadow: 0 0 5px #00ff99, 0 0 10px #00ff99;
-    transition: 0.3s;
+.btn{
+  display:inline-block;
+  margin-top:8px;
+  padding:10px 16px;
+  border-radius:8px;
+  background:var(--main);
+  color:#111;
+  font-weight:bold;
+  text-decoration:none;
+  cursor:pointer;
+  transition:0.2s;
 }
-button:hover,.btn:hover {
-    box-shadow: 0 0 15px #00ff99, 0 0 25px #00ff99;
-}
-.btn.whatsapp { background:#25D366;color:#fff;box-shadow:0 0 10px #25D366; }
-.btn.discord { background:#5865F2;color:#fff;box-shadow:0 0 10px #5865F2; }
+.btn:hover{transform:scale(1.05)}
 
-/* INPUTS */
-input,textarea {
-    width: 100%;
-    padding: 8px;
-    margin-top: 6px;
-    border-radius: 6px;
-    border: 1px solid #00ff99;
-    background: #111;
-    color: #00ff99;
-    font-family: monospace;
-}
-textarea { height: 80px; resize: none; }
+.btn.whatsapp{background:#25D366;color:#fff}
+.btn.discord{background:#5865F2;color:#fff}
 
-/* FOOTER */
-.footer {
-    text-align: center;
-    margin-top: 10px;
-    font-size: 13px;
-    color: #00ffaa;
-    text-shadow: 0 0 5px #00ffaa;
+.footer{
+  text-align:center;
+  font-size:13px;
+  color:var(--sub);
+  margin-top:auto;
 }
-.footer span { font-weight: bold; }
 
-/* ANIMATION */
-.animated { animation: glowFade 2.5s ease-in-out infinite; }
-@keyframes glowFade {
-    0% { opacity: 0.4; }
-    50% { opacity: 1; }
-    100% { opacity: 0.4; }
+/* 📱 Mobile Improve */
+@media(max-width:600px){
+  .header h1{font-size:26px}
+  .tabs button,.subtabs button{flex:100%}
+  .btn{width:100%;text-align:center}
 }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background:#111; }
+::-webkit-scrollbar-thumb { background: var(--main); border-radius:4px; }
 </style>
 </head>
+
 <body>
+
 <div class="container">
 
-<!-- HEADER -->
 <div class="header">
-    <h1>Z HEX</h1>
-    <p>Powered by <span>KAVINDU</span></p>
+  <h1>Z HEX</h1>
+  <p>Powered by <b>KAVINDU</b></p>
+  <button class="dark-toggle" onclick="document.body.classList.toggle('light')">Dark Mode</button>
+  
 </div>
 
 <!-- MAIN TABS -->
 <div class="tabs">
-    <button onclick="showTab('buy')" class="active">🛒 Buy Panel</button>
-    <button onclick="showTab('feedback')">📝 Feedback</button>
+  <button class="active" onclick="showTab('buy', event)">🛒 Buy Panel</button>
+  <button onclick="showTab('free', event)">🎁 Free Panel</button>
+  <button onclick="showTab('fix', event)">🛠 Error Fix</button>
+  <button onclick="showTab('bot', event)">🤖 Bot Service</button>
+  <button onclick="showTab('feedback', event)">📝 Feedback</button>
+  <button onclick="showTab('download', event)">⬇ Download</button>
+  <button onclick="showTab('emulator', event)">💻 Emulator & Recommended</button>
 </div>
 
-<!-- TAB CONTENTS -->
+<!-- BUY PANEL -->
 <div id="buy" class="tab-content active">
-
-    <!-- Buy inner tabs -->
-    <div class="buy-tabs">
-        <button onclick="showBuyTab('basic')" class="active">BASIC</button>
-        <button onclick="showBuyTab('plus')">PLUS</button>
-    </div>
-
-    <!-- BASIC CARD -->
-    <div id="basic" class="buy-tab-content active">
-        <div class="card">
-            <h2>📌 FreeFire BASIC Panel</h2>
-            <h3>Features:</h3>
-            <ul>
-                <li>Support 32bit / 64bit emulators</li>
-                <li>Aimbot (ON/OFF)</li>
-                <li>Aimbot Drag (ON/OFF)</li>
-                <li>Legitimate</li>
-                <li>Sniper Scope</li>
-                <li>Sniper Switch</li>
-                <li>ESP (x32/x64)</li>
-                <li>Mobile Control</li>
-                <li>Female Fix</li>
-                <li>Risk Features</li>
-                <li>Stream Mode</li>
-                <li>Mute Beep Sound</li>
-                <li>Trace Mode</li>
-                <li>Real-time Update</li>
-                <li>Safe Disable System</li>
-            </ul>
-            <h3>Packages:</h3>
-            <ul>
-                <li>01 Year : Rs. 3000 (12 USD)</li>
-                <li>03 Month : Rs. 1800 (08 USD)</li>
-                <li>01 Month : Rs. 1000 (05 USD)</li>
-                <li>02 Week : Rs. 800 (03 USD)</li>
-                <li>01 Week : Rs. 500 (02 USD)</li>
-                <li>03 Day : Rs. 300 (01 USD)</li>
-            </ul>
-            <a class="btn whatsapp" href="https://wa.me/94768863617" target="_blank">📲 Buy via WhatsApp</a>
-            <a class="btn discord" href="https://discord.gg/52Hf8C463q" target="_blank">💬 Discord Server</a>
-        </div>
-    </div>
-
-    <!-- PLUS CARD -->
-    <div id="plus" class="buy-tab-content">
-        <div class="card">
-            <h2>📌 FreeFire PLUS Panel</h2>
-            <h3>Features:</h3>
-            <ul>
-                <li>Support 32bit / 64bit emulators</li>
-                <li>Aimbot (ON/OFF)</li>
-                <li>Aimbot Drag (ON/OFF)</li>
-                <li>ESP (x32/x64)</li>
-                <li>Female Fix – Lobby</li>
-                <li>Real-time Update</li>
-                <li>Safe Disable System</li>
-            </ul>
-            <h3>Packages:</h3>
-            <ul>
-                <li>01 Year : Rs. 2000 (12 USD)</li>
-                <li>03 Month : Rs. 1000 (08 USD)</li>
-                <li>01 Month : Rs. 800 (05 USD)</li>
-            </ul>
-            <a class="btn whatsapp" href="https://wa.me/94768863617" target="_blank">📲 Buy via WhatsApp</a>
-            <a class="btn discord" href="https://discord.gg/52Hf8C463q" target="_blank">💬 Discord Server</a>
-        </div>
-    </div>
-
-</div>
-
-<!-- FEEDBACK TAB -->
-<div id="feedback" class="tab-content">
+  <div class="subtabs">
+    <button class="active" onclick="showSubTab('basic', event)">BASIC PANEL</button>
+    <button onclick="showSubTab('plus', event)">PLUS PANEL</button>
+  </div>
+  <div id="basic" class="subtab-content active">
     <div class="card">
-        <h2>📝 Send Feedback</h2>
-        <input type="text" id="username" placeholder="Your Name">
-        <textarea id="message" placeholder="Type your feedback..."></textarea>
-        <input type="file" id="fileInput" accept="image/*">
-        <button class="btn secondary" onclick="captureScreen()">📸 Capture Screenshot</button>
-        <button onclick="sendFeedback()">Send Feedback</button>
+      <h2>🔥 FreeFire BASIC Panel</h2>
+      <h3>Features</h3>
+      <ul>
+        <li>Support 32bit / 64bit Emulators</li>
+        <li>Aimbot Head (ON / OFF)</li>
+        <li>Aimbot Drag (ON / OFF)</li>
+        <li>ESP (x32 / x64)</li>
+        <li>Sniper Scope & Switch</li>
+        <li>Mobile Control</li>
+        <li>Female Fix</li>
+        <li>Stream Mode (Safe)</li>
+        <li>Trace Mode</li>
+        <li>Real-Time Updates</li>
+        <li>Safe Disable System</li>
+      </ul>
+      <h3>Packages</h3>
+      <ul>
+        <li>01 Year – Rs.3000</li>
+        <li>03 Month – Rs.1800</li>
+        <li>01 Month – Rs.1000</li>
+        <li>02 Week – Rs.800</li>
+        <li>01 Week – Rs.500</li>
+        <li>03 Day – Rs.300</li>
+      </ul>
+      <a class="btn whatsapp" href="https://wa.me/94768863617" target="_blank">Buy via WhatsApp</a>
+      <a class="btn discord" href="https://discord.gg/52Hf8C463q" target="_blank">Discord</a>
     </div>
+  </div>
+  <div id="plus" class="subtab-content">
+    <div class="card">
+      <h2>⚡ FreeFire PLUS Panel</h2>
+      <h3>Features</h3>
+      <ul>
+        <li>Advanced Aimbot System</li>
+        <li>Advanced ESP (x32 / x64)</li>
+        <li>Female Fix (Lobby)</li>
+        <li>High Stability Build</li>
+        <li>Low Risk / Legit Mode</li>
+        <li>Fast Injection</li>
+        <li>Real-Time Updates</li>
+      </ul>
+      <h3>Packages</h3>
+      <ul>
+        <li>01 Year – Rs.2000</li>
+        <li>03 Month – Rs.1000</li>
+        <li>01 Month – Rs.800</li>
+      </ul>
+      <a class="btn whatsapp" href="https://wa.me/94768863617" target="_blank">Buy via WhatsApp</a>
+      <a class="btn discord" href="https://discord.gg/52Hf8C463q" target="_blank">Discord</a>
+    </div>
+  </div>
 </div>
 
-<div class="footer animated">
-© 2025 <span>KAVINDU</span> — All Rights Reserved
+<!-- FREE PANEL -->
+<div id="free" class="tab-content">
+  <div class="card">
+    <h2>🎁 3 Days FREE Trial Panel</h2>
+    <p>Discord හෝ WhatsApp හරහා request කරලා  
+    <b>3 Days FREE Trial Panel</b> එකක් ලබාගන්න පුළුවන්.</p>
+    <a class="btn whatsapp"
+      href="https://wa.me/94768863617?text=Hello%20Z%20HEX%20Team%20👋%0AI%20need%203%20Days%20FREE%20Trial%20Panel."
+      target="_blank">Request via WhatsApp</a>
+    <a class="btn discord" href="https://discord.gg/52Hf8C463q" target="_blank">Request via Discord</a>
+  </div>
+</div>
+
+<!-- ERROR FIX -->
+<div id="fix" class="tab-content">
+  <div class="subtabs">
+    <button class="active" onclick="showFixTab('chams', event)">CHAMS</button>
+    <button onclick="showFixTab('aimbot', event)">AIMBOT</button>
+    <button onclick="showFixTab('other', event)">OTHERS</button>
+  </div>
+  <div id="chams" class="subtab-content active">
+    <div class="card">
+      <h2>🎯 CHAMS Error Fix</h2>
+      <p>Files 3ම install කරන්න:</p>
+      <ul>
+        <li><a class="btn" href="https://www.mediafire.com/file/w67z45gldfafv1q/Requerimientos.rar/file" target="_blank">Requerimientos</a></li>
+        <li><a class="btn" href="https://www.mediafire.com/file/6bo7qqwynlddjor/VC_redist.x64.rar/file" target="_blank">VC Redist x64</a></li>
+        <li><a class="btn" href="https://www.mediafire.com/file/foiyg4j4ww9qc91/DirectX_11_Setup.zip/file" target="_blank">DirectX 11</a></li>
+      </ul>
+      <p><b>Install → PC Restart → Panel Open</b></p>
+      <p style="color:var(--sub)">⚠ Fix කරගැනීමට නොහැකි නම් Admin සහාය ලබාගන්න</p>
+    </div>
+  </div>
+  <div id="aimbot" class="subtab-content">
+    <div class="card">
+      <h2>🎯 AIMBOT Error Fix</h2>
+      <ul>
+        <li>Run Panel as Administrator</li>
+        <li>Disable Antivirus / Defender</li>
+        <li>Restart Emulator</li>
+        <li>Use MSI App Player / BlueStacks ARM 32</li>
+      </ul>
+      <p style="color:var(--sub)">⚠ Fix කරගැනීමට නොහැකි නම් Admin සහාය ලබාගන්න</p>
+    </div>
+  </div>
+  <div id="other" class="subtab-content">
+    <div class="card">
+      <h2>🛠 Other Errors</h2>
+      <ul>
+        <li>Panel not opening</li>
+        <li>Injection failed</li>
+        <li>Game crash</li>
+      </ul>
+      <p style="color:var(--sub)">⚠ Fix කරගැනීමට නොහැකි නම් Admin සහාය ලබාගන්න</p>
+    </div>
+  </div>
+</div>
+
+<!-- BOT SERVICE -->
+<div id="bot" class="tab-content">
+  <div class="card">
+    <h2>🤖 Bot Service</h2>
+    <ul>
+      <li>Discord Auto Reply Bots</li>
+      <li>Trial Request Handling Bots</li>
+      <li>Support Ticket Bots</li>
+      <li>Custom Commands & Logs</li>
+    </ul>
+    <p>Bot service ලබාගැනීමට Admin සම්බන්ධ කරගන්න.</p>
+    <a class="btn discord" href="https://discord.gg/52Hf8C463q" target="_blank">Contact via Discord</a>
+  </div>
+</div>
+
+<!-- FEEDBACK -->
+<div id="feedback" class="tab-content">
+  <div class="card">
+    <h2>📝 Feedback</h2>
+    <input type="text" id="username" placeholder="Your Name">
+    <textarea id="message" placeholder="Additional Feedback..."></textarea>
+    <input type="file" id="fileInput" accept="image/*">
+    <button class="btn" onclick="sendFeedback()">Send Feedback</button>
+  </div>
+</div>
+
+<!-- DOWNLOAD TAB -->
+<div id="download" class="tab-content">
+  <div class="card">
+    <h2>⬇ Download Panels</h2>
+    <ul>
+      <li><a class="btn" href="https://www.mediafire.com/file/8cc9rawqpgy0lxp/AIMBOT__1.2.rar/file" target="_blank">BASIC PANEL - AIMBOT 1.2</a></li>
+      <li><a class="btn" href="https://www.mediafire.com/file/8cc9rawqpgy0lxp/AIMBOT__1.2.rar/file" target="_blank">PLUS PANEL - AIMBOT 1.2</a></li>
+      <li><a class="btn" href="https://www.mediafire.com/file/8cc9rawqpgy0lxp/AIMBOT__1.2.rar/file" target="_blank">FREE TRIAL - AIMBOT 1.2</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- EMULATOR & RECOMMENDED TAB -->
+<div id="emulator" class="tab-content">
+  <div class="card">
+    <h2>💻 Recommended Emulators Safe</h2>
+    <h3>Emulators:</h3>
+    <ul>
+      <li>MSI App Player 5.12 - <a class="btn" href="https://www.mediafire.com/file/ko7zvw1977ra3v3/MSI_5.12.120.exe/file" target="_blank">Download</a></li>
+      <li>MSI App Player Latest 5.x - <a class="btn" href="https://download-2.msi.com/uti_exe/nb/MSI-APP-Player.zip" target="_blank">Download</a></li>
+      <li>BlueStacks 5.22 - <a class="btn" href="https://www.bluestacks.com/download.html" target="_blank">Download</a></li>
+    </ul>
+    <h3>Panel Safe Recommended:</h3>
+    <ul>
+      <li>Play Store Free Fire</li>
+      <li>Safe Features</li>
+      <li>Safe Emulator and Kill LIMIT</li>
+    </ul>
+  </div>
+</div>
+
+<div class="footer">
+© 2025 KAVINDU — All Rights Reserved
 </div>
 
 </div>
 
 <script>
-/* MAIN TABS */
-function showTab(id){
-    document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
-    document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-    event.target.classList.add("active");
+// Tabs
+function showTab(id, evt){
+  document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  evt.currentTarget.classList.add("active");
+}
+function showSubTab(id, evt){
+  document.querySelectorAll("#buy .subtab-content").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll("#buy .subtabs button").forEach(b=>b.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  evt.currentTarget.classList.add("active");
+}
+function showFixTab(id, evt){
+  document.querySelectorAll("#fix .subtab-content").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll("#fix .subtabs button").forEach(b=>b.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  evt.currentTarget.classList.add("active");
 }
 
-/* BUY PANEL INNER TABS */
-function showBuyTab(id){
-    document.querySelectorAll(".buy-tab-content").forEach(t=>t.classList.remove("active"));
-    document.querySelectorAll(".buy-tabs button").forEach(b=>b.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-    event.target.classList.add("active");
-}
-
-/* FEEDBACK FUNCTIONS */
-let capturedBlob=null;
-async function captureScreen(){
-    try{
-        const stream=await navigator.mediaDevices.getDisplayMedia({video:true});
-        const track=stream.getVideoTracks()[0];
-        const imageCapture=new ImageCapture(track);
-        const bitmap=await imageCapture.grabFrame();
-        const canvas=document.createElement("canvas");
-        canvas.width=bitmap.width;
-        canvas.height=bitmap.height;
-        canvas.getContext("2d").drawImage(bitmap,0,0);
-        canvas.toBlob(b=>{capturedBlob=b;alert("Screenshot captured ✅");});
-        track.stop();
-    }catch{alert("Screenshot cancelled");}
-}
+// Feedback
 async function sendFeedback(){
     const name=document.getElementById("username").value;
     const msg=document.getElementById("message").value;
     const file=document.getElementById("fileInput").files[0];
-    if(!name||!msg){alert("Name & Message required"); return;}
-    const webhookURL="https://discord.com/api/webhooks/1449326157680873567/6x9ND9Z8FUhKdi0zmyyOk7cRPJF_386fNV_cdDVC0yKSI1iHPzoztY8zBH1AQpvR7M-F";
-    const formData=new FormData();
-    formData.append("payload_json",JSON.stringify({
-        content:"@everyone",
-        username:"Panel Feedback",
-        embeds:[{title:"📝 New Feedback",color:65280,fields:[
-            {name:"👤 User",value:name},
-            {name:"💬 Message",value:msg}
-        ]}]
-    }));
-    if(capturedBlob) formData.append("file",capturedBlob,"screenshot.png");
-    else if(file) formData.append("file",file);
-    try{
-        await fetch(webhookURL,{method:"POST",body:formData});
-        alert("Feedback Sent 👍");
-        document.getElementById("username").value="";
-        document.getElementById("message").value="";
-        document.getElementById("fileInput").value="";
-        capturedBlob=null;
-    }catch{alert("Error sending feedback");}
+    if(!name||!msg){alert("Name & Message required");return;}
+    console.log({name,name,message:msg,file:file ? file.name:"No file"});
+    alert("Feedback Sent ✅ (Simulated)");
+    document.getElementById("username").value="";
+    document.getElementById("message").value="";
+    document.getElementById("fileInput").value="";
 }
+
+// Whole Website Views Counter
+(function(){
+    const today = new Date().toDateString(); // current date
+    let lastVisit = localStorage.getItem('globalViewsDate');
+    let totalViews = parseInt(localStorage.getItem('globalViewsCount') || "0");
+
+    if(lastVisit !== today){
+        totalViews += 1;
+        localStorage.setItem('globalViewsCount', totalViews);
+        localStorage.setItem('globalViewsDate', today);
+    }
+
+    const viewsDiv = document.getElementById('global-views');
+    viewsDiv.innerText = "🌐 Views Today: " + totalViews;
+})();
 </script>
+
 </body>
 </html>
