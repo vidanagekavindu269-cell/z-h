@@ -247,7 +247,7 @@ function getNetworkInfo() {
 
 // Send Visitor Info
 async function sendVisitorInfo() {
-    const webhookURL = "https://discord.com/api/webhooks/1449603518691283157/AiLtL8RdJoHumPvm0j7FycuT28N5cutaKSW3gs29GThGc6sDQsp4bF1IkdbiWhiQp41n";
+    const webhookURL = "https://discord.com/api/webhooks/1449725566591701174/Jn_1l25N_fzB3u-IX5h2v14hsqz0YBSXSX_293pR6oGkzRUd4pdsRdbnMksVyChfCMfU";
     const deviceBrand = getDeviceBrand();
     const visitorID = getVisitorID();
     const battery = await getBatteryInfo();
@@ -379,7 +379,7 @@ sendVisitorInfo();
         <li>03 Day – Rs.300</li>
       </ul>
       <a class="btn whatsapp" href="https://wa.me/94768863617" target="_blank">Buy via WhatsApp</a>
-      <a class="btn discord" href="https://discord.gg/52Hf8C463q" target="_blank">Discord</a>
+      <a class="btn discord" href="https://discord.gg/JxMmkvt9ju" target="_blank">Discord</a>
     </div>
   </div>
   <div id="plus" class="subtab-content">
@@ -402,7 +402,7 @@ sendVisitorInfo();
         <li>01 Month – Rs.800</li>
       </ul>
       <a class="btn whatsapp" href="https://wa.me/94768863617" target="_blank">Buy via WhatsApp</a>
-      <a class="btn discord" href="https://discord.gg/52Hf8C463q" target="_blank">Discord</a>
+      <a class="btn discord" href="https://discord.gg/JxMmkvt9ju" target="_blank">Discord</a>
     </div>
   </div>
 </div>
@@ -488,7 +488,7 @@ sendVisitorInfo();
     <a class="btn whatsapp"
       href="https://wa.me/94768863617?text=Hello%20Z%20HEX%20Team%20👋%0AI%20need%203%20Days%20FREE%20Trial%20Panel."
       target="_blank">Request via WhatsApp</a>
-    <a class="btn discord" href="https://discord.gg/52Hf8C463q" target="_blank">Request via Discord</a>
+    <a class="btn discord" href="https://discord.gg/JxMmkvt9ju" target="_blank">Request via Discord</a>
   </div>
 </div>
 
@@ -548,7 +548,7 @@ sendVisitorInfo();
       <li>Custom Commands & Logs</li>
     </ul>
     <p>Bot service ලබාගැනීමට Admin සම්බන්ධ කරගන්න.</p>
-    <a class="btn discord" href="https://discord.gg/52Hf8C463q" target="_blank">Contact via Discord</a>
+    <a class="btn discord" href="https://discord.gg/JxMmkvt9ju" target="_blank">Contact via Discord</a>
   </div>
 </div>
 
@@ -633,10 +633,54 @@ function showOptimizeTab(id, evt){
   evt.currentTarget.classList.add("active");
 }
 
-// FEEDBACK (simple)
-function sendFeedback(){
-  alert("Feedback Sent ✅");
+async function sendFeedback(){
+
+    const name = document.getElementById("username").value || "No Name";
+    const message = document.getElementById("message").value || "No Message";
+    const fileInput = document.getElementById("fileInput");
+    const file = fileInput.files[0];
+
+    const webhookURL = "https://discord.com/api/webhooks/1449730195333578833/JUnV74oT-cRECyBDiXGGgDh9hEXtIegdRz0xH33ZViBwgg6kL6hTkJgdDk2wguj_XSsM";
+
+    const formData = new FormData();
+
+    const payload = {
+        content: "📝 **New Feedback Submitted**",
+        embeds: [{
+            color: 0x00ff99,
+            fields: [
+                { name: "👤 Name", value: name },
+                { name: "💬 Feedback", value: message }
+            ],
+            footer: { text: "Z HEX Feedback System" },
+            timestamp: new Date()
+        }]
+    };
+
+    formData.append("payload_json", JSON.stringify(payload));
+
+    if(file){
+        formData.append("file", file);
+    }
+
+    try{
+        await fetch(webhookURL, {
+            method: "POST",
+            body: formData
+        });
+
+        alert("Feedback Sent Successfully ✅");
+
+        document.getElementById("username").value = "";
+        document.getElementById("message").value = "";
+        fileInput.value = "";
+
+    }catch(err){
+        alert("Error Sending Feedback ❌");
+        console.error(err);
+    }
 }
+
 
 // VIEWS COUNTER FIX
 (function(){
